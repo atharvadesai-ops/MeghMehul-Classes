@@ -1,0 +1,86 @@
+{
+  "timestamp": "2025-12-23T13:13:14.264573",
+  "total_tests": 13,
+  "passed_tests": 13,
+  "success_rate": 100.0,
+  "test_details": [
+    {
+      "test": "API Root Endpoint",
+      "success": true,
+      "details": "Status: 200, Message: Meghmehul Engineering Classes API",
+      "timestamp": "2025-12-23T13:13:13.464760"
+    },
+    {
+      "test": "Admin Login",
+      "success": true,
+      "details": "Login successful, token received: True",
+      "timestamp": "2025-12-23T13:13:13.761363"
+    },
+    {
+      "test": "GET Courses",
+      "success": true,
+      "details": "GET Status: 200, Found 0 courses",
+      "timestamp": "2025-12-23T13:13:13.797612"
+    },
+    {
+      "test": "POST Course",
+      "success": true,
+      "details": "POST Status: 200, Course ID: 44eaf564-3759-46dd-9b1b-209dbd9ce179",
+      "timestamp": "2025-12-23T13:13:13.855964"
+    },
+    {
+      "test": "DELETE Course",
+      "success": true,
+      "details": "DELETE Status: 200",
+      "timestamp": "2025-12-23T13:13:13.892753"
+    },
+    {
+      "test": "POST Inquiry",
+      "success": true,
+      "details": "POST Status: 200, Inquiry ID: 434dfad2-07da-40ed-9bc3-0d6fb4e542fe",
+      "timestamp": "2025-12-23T13:13:13.942902"
+    },
+    {
+      "test": "GET Inquiries",
+      "success": true,
+      "details": "GET Status: 200, Found 1 inquiries",
+      "timestamp": "2025-12-23T13:13:14.016564"
+    },
+    {
+      "test": "PATCH Inquiry Status",
+      "success": true,
+      "details": "PATCH Status: 200",
+      "timestamp": "2025-12-23T13:13:14.053517"
+    },
+    {
+      "test": "POST Review",
+      "success": true,
+      "details": "POST Status: 200, Review ID: d71fe850-297b-4f9f-8ccc-5c0f0ee01bd8",
+      "timestamp": "2025-12-23T13:13:14.109125"
+    },
+    {
+      "test": "GET Reviews",
+      "success": true,
+      "details": "GET Status: 200, Found 1 reviews",
+      "timestamp": "2025-12-23T13:13:14.142636"
+    },
+    {
+      "test": "POST Notice",
+      "success": true,
+      "details": "POST Status: 200, Notice ID: 778d19cd-a6f1-4d25-8f59-0b8b8ae5bb30",
+      "timestamp": "2025-12-23T13:13:14.194202"
+    },
+    {
+      "test": "GET Notices",
+      "success": true,
+      "details": "GET Status: 200, Found 1 notices",
+      "timestamp": "2025-12-23T13:13:14.229199"
+    },
+    {
+      "test": "DELETE Notice",
+      "success": true,
+      "details": "DELETE Status: 200",
+      "timestamp": "2025-12-23T13:13:14.262603"
+    }
+  ]
+}
