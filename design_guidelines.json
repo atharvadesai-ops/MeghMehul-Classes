@@ -1,0 +1,214 @@
+{
+  "identity": {
+    "name": "E1",
+    "persona": "The Anti-AI Designer",
+    "philosophy": "Fusion over Imitation. Engineering is Art. Structure is Beauty.",
+    "vibe": "Swiss Technical. Precision. Trust. Academic Excellence."
+  },
+  "project_context": {
+    "name": "Meghmehul Engineering Classes",
+    "type": "Educational Institute Website",
+    "target_audience": "Engineering Students (Gen Z), Parents",
+    "key_goals": ["Trust (4.9 Star Rating)", "Inquiries (Calls/Visits)", "Course Discovery"],
+    "emotional_tone": "Competent, Structured, Result-Oriented, Approachable"
+  },
+  "design_system": {
+    "theme": {
+      "mode": "light",
+      "strategy": "Swiss Technical - High Contrast, Grid-Based, Blueprint Aesthetics"
+    },
+    "colors": {
+      "palette": {
+        "primary": {
+          "name": "Engineering Navy",
+          "hex": "#0F172A",
+          "tailwind": "bg-slate-900",
+          "usage": "Headings, Primary Text, Footer Background"
+        },
+        "secondary": {
+          "name": "Blueprint Blue",
+          "hex": "#2563EB",
+          "tailwind": "bg-blue-600",
+          "usage": "Technical Accents, Grid Lines, Icons, Links"
+        },
+        "accent": {
+          "name": "Safety Orange",
+          "hex": "#F97316",
+          "tailwind": "bg-orange-500",
+          "usage": "Primary CTAs (Enroll, Call Now), Highlights"
+        },
+        "background": {
+          "name": "Drafting Paper",
+          "hex": "#FFFFFF",
+          "tailwind": "bg-white",
+          "usage": "Main Backgrounds"
+        },
+        "surface": {
+          "name": "Technical Gray",
+          "hex": "#F8FAFC",
+          "tailwind": "bg-slate-50",
+          "usage": "Section Backgrounds, Cards"
+        },
+        "error": {
+          "name": "Alert Red",
+          "hex": "#EF4444",
+          "tailwind": "bg-red-500",
+          "usage": "Error States, Urgent Notices"
+        }
+      },
+      "rules": [
+        "NO Gradients on Text.",
+        "NO Full-screen gradients.",
+        "Use 'Blueprint Blue' for thin 1px borders to simulate engineering drawings.",
+        "Primary CTA must be 'Safety Orange' for maximum visibility against Navy/White."
+      ]
+    },
+    "typography": {
+      "font_family": {
+        "headings": "Outfit, sans-serif",
+        "body": "Inter, sans-serif",
+        "mono": "JetBrains Mono, monospace"
+      },
+      "weights": {
+        "headings": "font-bold (700) or font-medium (500)",
+        "body": "font-normal (400)",
+        "accent": "font-medium (500)"
+      },
+      "scaling": {
+        "h1": "text-5xl md:text-7xl tracking-tight leading-none",
+        "h2": "text-3xl md:text-5xl tracking-tight",
+        "h3": "text-2xl md:text-3xl tracking-normal",
+        "body": "text-base md:text-lg leading-relaxed",
+        "label": "text-xs md:text-sm uppercase tracking-widest font-mono"
+      },
+      "rules": [
+        "Headings must use 'Outfit'. If not available, use a geometric sans.",
+        "Use 'JetBrains Mono' for metadata (dates, course codes, ratings) to give a technical feel.",
+        "Never center text by default. Left align for strong reading lines."
+      ]
+    },
+    "spacing": {
+      "scale": "Tailwind Default",
+      "philosophy": "Generous. Use p-8 to p-12 for section padding.",
+      "grid_gap": "gap-6 or gap-8",
+      "container_padding": "px-4 md:px-8"
+    },
+    "borders": {
+      "radius": {
+        "default": "rounded-none",
+        "buttons": "rounded-sm",
+        "cards": "rounded-sm"
+      },
+      "style": "Sharp, precise edges. Avoid large rounded corners (max 2px or 4px).",
+      "width": "border (1px) or border-2"
+    },
+    "shadows": {
+      "default": "shadow-sm",
+      "hover": "shadow-md",
+      "card": "shadow-[4px_4px_0px_0px_rgba(15,23,42,0.1)]"
+    }
+  },
+  "layout_strategies": {
+    "marketing_pages": {
+      "grid_system": "Bento Grid (Asymmetrical)",
+      "hero_section": "Split Screen. Left: Typography + CTA. Right: Image with 'Blueprint' overlay.",
+      "features_section": "Grid with visible borders (border-collapse style).",
+      "testimonials": "Masonry or Horizontal Scroll with 'Tech Spec' card style."
+    },
+    "dashboard": {
+      "grid_system": "Control Room Grid (Dense)",
+      "sidebar": "Fixed left, dark mode (Navy).",
+      "cards": "Flat, white, 1px border, no shadow."
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-orange-500 hover:bg-orange-600 text-white rounded-sm px-8 py-3 font-medium transition-all shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]",
+      "secondary": "bg-white border-2 border-slate-900 text-slate-900 hover:bg-slate-50 rounded-sm px-8 py-3 font-medium",
+      "ghost": "text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-sm px-4 py-2"
+    },
+    "cards": {
+      "course_card": "bg-white border border-slate-200 p-6 hover:border-blue-500 transition-colors group relative overflow-hidden",
+      "feature_card": "bg-slate-50 p-8 border-l-4 border-orange-500",
+      "review_card": "bg-white p-6 border border-slate-100 shadow-sm"
+    },
+    "inputs": {
+      "default": "h-12 rounded-sm border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+    },
+    "navigation": {
+      "header": "Sticky, bg-white/90 backdrop-blur-md border-b border-slate-100. NO transparent backgrounds.",
+      "footer": "bg-slate-900 text-white py-16"
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_main": {
+        "url": "https://images.unsplash.com/photo-1758685848261-16a5a9e68811",
+        "alt": "Engineering students solving problems at chalkboard",
+        "usage": "Hero Section Right Side"
+      },
+      "civil_engineering": {
+        "url": "https://images.unsplash.com/photo-1721244654392-9c912a6eb236",
+        "alt": "Civil engineering blueprints and plans",
+        "usage": "Course Card - Civil / Construction"
+      },
+      "computer_engineering": {
+        "url": "https://images.unsplash.com/photo-1649451844934-d33042e93092",
+        "alt": "Laptop with code",
+        "usage": "Course Card - Computer / IT"
+      },
+      "study_group": {
+        "url": "https://images.pexels.com/photos/6208725/pexels-photo-6208725.jpeg",
+        "alt": "Students studying together",
+        "usage": "About Us / Community Section"
+      }
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "Stroke width 1.5px (Thin/Technical)"
+    }
+  },
+  "motion": {
+    "library": "framer-motion",
+    "preferences": {
+      "reduced_motion": "respect",
+      "type": "spring",
+      "stiffness": 100,
+      "damping": 20
+    },
+    "standard_animations": {
+      "fade_in_up": {
+        "initial": { "opacity": 0, "y": 20 },
+        "whileInView": { "opacity": 1, "y": 0 },
+        "viewport": { "once": true }
+      },
+      "hover_lift": {
+        "whileHover": { "y": -4 }
+      }
+    }
+  },
+  "accessibility": {
+    "contrast": "WCAG AA Minimum. Text on Orange must be White or Black depending on shade (use Black for safety if unsure, but White on Orange-500 is usually readable with bold weight).",
+    "focus_states": "Visible ring-2 ring-blue-500 ring-offset-2",
+    "aria": "All interactive elements must have aria-labels if no text is present."
+  },
+  "instructions_to_main_agent": [
+    "Use the provided image URLs. Do not use placeholders.",
+    "Implement the 'Swiss Technical' theme: Sharp corners, high contrast, blueprint aesthetics.",
+    "For the 'Courses' section, use a Bento Grid layout.",
+    "For the 'Reviews' section, highlight the 4.9 Star Rating prominently.",
+    "Ensure the 'Call Now' and 'Enroll' buttons are always accessible (sticky or frequent).",
+    "Use 'JetBrains Mono' for any technical data like dates, fees, or codes.",
+    "Do NOT use generic 'school' icons. Use abstract geometric shapes or technical icons.",
+    "All components must be .jsx (not .tsx) as per project structure.",
+    "Add 'data-testid' to all interactive elements."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop' - generic centered layouts.",
+    "Create depth with z-index and layered elements.",
+    "No 'transition: all'. Animate specific properties.",
+    "No generic AI emojis.",
+    "Use 'sonner' for toasts.",
+    "Export components as named exports."
+  ]
+}
