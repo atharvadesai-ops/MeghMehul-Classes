@@ -21,13 +21,12 @@ export const Header = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-3" data-testid="logo-link">
-            <div className="w-12 h-12 bg-blue-600 rounded-sm flex items-center justify-center">
-              <GraduationCap className="w-7 h-7 text-white" strokeWidth={1.5} />
-            </div>
-            <div className="hidden md:block">
-              <div className="text-slate-900 font-bold text-lg leading-tight">Meghmehul</div>
-              <div className="text-blue-600 font-mono text-xs tracking-wider uppercase">Engineering Classes</div>
-            </div>
+              <img
+                src="/Logo.png"
+                alt="Meghmehul Engineering Classes Logo"
+                className="w-30 h-10 object-contain"
+              />
+            
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
