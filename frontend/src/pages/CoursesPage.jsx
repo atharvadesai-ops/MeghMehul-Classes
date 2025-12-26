@@ -2,7 +2,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FloatingButtons } from '@/components/FloatingButtons';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { BookOpen, Clock, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -22,7 +22,7 @@ const CoursesPage = () => {
     transition: { duration: 0.6 }
   };
 
-  const defaultCourses = [
+  const defaultCourses = useMemo(() => [
     {
       id: '1',
       name: 'Civil Engineering - Degree',
@@ -86,15 +86,11 @@ const CoursesPage = () => {
       duration: 'Semester-wise',
       features: ['Digital Electronics', 'Signals & Systems', 'Communication', 'Microprocessors']
     }
-  ];
+  ], []);
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
     try {
-      const response = await axios.get(`${API}/courses`);
+      const response = await axios.get(`${API}/courses`, { timeout: 5000 });
       if (response.data && response.data.length > 0) {
         setCourses(response.data);
       } else {
@@ -106,7 +102,11 @@ const CoursesPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [defaultCourses]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
 
   const streams = ['All', 'Civil', 'Mechanical', 'Computer', 'IT', 'EXTC'];
 

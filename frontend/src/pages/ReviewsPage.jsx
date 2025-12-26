@@ -2,7 +2,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FloatingButtons } from '@/components/FloatingButtons';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { Star, Quote } from 'lucide-react';
 
@@ -20,7 +20,7 @@ const ReviewsPage = () => {
     transition: { duration: 0.6 }
   };
 
-  const defaultReviews = [
+  const defaultReviews = useMemo(() => [
     {
       id: '1',
       name: 'Rajesh Kumar',
@@ -63,27 +63,54 @@ const ReviewsPage = () => {
       comment: 'Best decision to join Meghmehul Classes. The personal guidance helped me understand difficult subjects easily.',
       course: 'Civil Engineering'
     }
-  ];
+  ], []);
+
+  const fetchReviews = useCallback(async () => {
+    const googleApiKey = process.env.REACT_APP_GOOGLE_API_KEY;
+    const placeId = process.env.REACT_APP_GOOGLE_PLACE_ID;
+
+    if (googleApiKey && placeId && googleApiKey !== 'your_google_api_key_here') {
+      try {
+        const response = await axios.get(
+          `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=reviews&key=${googleApiKey}`,
+          { timeout: 5000 }
+        );
+        if (response.data && response.data.result && response.data.result.reviews) {
+          const googleReviews = response.data.result.reviews.map(review => ({
+            id: review.time.toString(),
+            name: review.author_name,
+            rating: review.rating,
+            comment: review.text,
+            course: 'General'
+          }));
+          setReviews(googleReviews);
+        } else {
+          setReviews(defaultReviews);
+        }
+      } catch (error) {
+        console.error('Error fetching Google reviews:', error);
+        setReviews(defaultReviews);
+      }
+    } else {
+      // Fallback to backend or default
+      try {
+        const response = await axios.get(`${API}/reviews`, { timeout: 5000 });
+        if (response.data && response.data.length > 0) {
+          setReviews(response.data);
+        } else {
+          setReviews(defaultReviews);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        setReviews(defaultReviews);
+      }
+    }
+    setLoading(false);
+  }, [defaultReviews]);
 
   useEffect(() => {
     fetchReviews();
-  }, []);
-
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(`${API}/reviews`);
-      if (response.data && response.data.length > 0) {
-        setReviews(response.data);
-      } else {
-        setReviews(defaultReviews);
-      }
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-      setReviews(defaultReviews);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchReviews]);
 
   const renderStars = (rating) => {
     return (
