@@ -8,13 +8,13 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-sm flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-white" strokeWidth={1.5} />
-              </div>
-              <div>
-                <div className="font-bold text-base">Meghmehul</div>
-                <div className="text-blue-400 font-mono text-xs">Engineering Classes</div>
-              </div>
+                <Link to="/" className="flex items-center gap-3" data-testid="logo-link">
+                <img
+                  src="/Logo.png"
+                  alt="Meghmehul Engineering Classes Logo"
+                  className="w-30 h-10 object-contain"
+                />
+                </Link>
             </div>
             <div className="flex items-center gap-2 text-yellow-400 mb-2">
               <Star size={16} fill="currentColor" />
