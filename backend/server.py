@@ -1,8 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends
-from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import requests
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
@@ -10,16 +9,22 @@ from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
 import bcrypt
+from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
-
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
+
+# In-memory storage
+db = {
+    "courses": [],
+    "reviews": [],
+    "inquiries": [],
+    "notices": [],
+    "admins": []
+}
 
 class CourseBase(BaseModel):
     name: str
@@ -92,103 +97,145 @@ async def root():
 @api_router.post("/courses", response_model=Course)
 async def create_course(course: CourseBase):
     course_obj = Course(**course.model_dump())
-    doc = course_obj.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.courses.insert_one(doc)
+    db["courses"].append(course_obj.model_dump())
     return course_obj
 
 @api_router.get("/courses", response_model=List[Course])
 async def get_courses(stream: Optional[str] = None):
-    query = {}
+    courses = db["courses"]
     if stream:
-        query['stream'] = stream
-    courses = await db.courses.find(query, {"_id": 0}).to_list(1000)
-    for course in courses:
-        if isinstance(course['created_at'], str):
-            course['created_at'] = datetime.fromisoformat(course['created_at'])
+        courses = [c for c in courses if c['stream'] == stream]
     return courses
 
 @api_router.delete("/courses/{course_id}")
 async def delete_course(course_id: str):
-    result = await db.courses.delete_one({"id": course_id})
-    if result.deleted_count == 0:
+    initial_len = len(db["courses"])
+    db["courses"] = [c for c in db["courses"] if c['id'] != course_id]
+    if len(db["courses"]) == initial_len:
         raise HTTPException(status_code=404, detail="Course not found")
     return {"message": "Course deleted"}
 
 @api_router.post("/reviews", response_model=Review)
 async def create_review(review: ReviewBase):
     review_obj = Review(**review.model_dump())
-    doc = review_obj.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.reviews.insert_one(doc)
+    db["reviews"].append(review_obj.model_dump())
     return review_obj
 
 @api_router.get("/reviews", response_model=List[Review])
 async def get_reviews(approved: Optional[bool] = True):
-    query = {"approved": approved} if approved is not None else {}
-    reviews = await db.reviews.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
-    for review in reviews:
-        if isinstance(review['created_at'], str):
-            review['created_at'] = datetime.fromisoformat(review['created_at'])
+    reviews = db["reviews"]
+    if approved is not None:
+        reviews = [r for r in reviews if r.get('approved') == approved]
+    # Sort by created_at desc
+    reviews.sort(key=lambda x: x['created_at'], reverse=True)
     return reviews
 
 @api_router.post("/inquiries", response_model=Inquiry)
 async def create_inquiry(inquiry: InquiryBase):
     inquiry_obj = Inquiry(**inquiry.model_dump())
-    doc = inquiry_obj.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.inquiries.insert_one(doc)
+    db["inquiries"].append(inquiry_obj.model_dump())
+    
+    # Send WhatsApp Notification (Server-side)
+    try:
+        send_whatsapp_notification(inquiry_obj)
+    except Exception as e:
+        logger.error(f"Failed to send WhatsApp notification: {str(e)}")
+        
     return inquiry_obj
+
+def send_whatsapp_notification(inquiry: Inquiry):
+    """
+    Sends a WhatsApp notification using the WhatsApp Cloud API (Meta) or logs if not configured.
+    """
+    whatsapp_token = os.environ.get("WHATSAPP_TOKEN")
+    whatsapp_phone_number_id = os.environ.get("WHATSAPP_PHONE_NUMBER_ID")
+    target_phone_number = "918983692788" # The number mentioned in the site/user request
+    
+    message_body = (
+        f"🔔 *New Inquiry Received*\n\n"
+        f"👤 *Name:* {inquiry.name}\n"
+        f"📞 *Phone:* {inquiry.phone}\n"
+        f"📧 *Email:* {inquiry.email or 'N/A'}\n"
+        f"📚 *Course:* {inquiry.course_interested}\n"
+        f"💬 *Message:* {inquiry.message or 'N/A'}\n"
+    )
+
+    if whatsapp_token and whatsapp_phone_number_id:
+        url = f"https://graph.facebook.com/v18.0/{whatsapp_phone_number_id}/messages"
+        headers = {
+            "Authorization": f"Bearer {whatsapp_token}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "messaging_product": "whatsapp",
+            "to": target_phone_number,
+            "type": "text",
+            "text": {"body": message_body}
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 200:
+            logger.info("✅ WhatsApp notification sent successfully")
+        else:
+            logger.error(f"❌ Failed to send WhatsApp notification: {response.text}")
+    else:
+        # Simulation mode if credentials are missing
+        logger.info("ℹ️ WhatsApp credentials not found in .env. Simulating send:")
+        logger.info(f"📤 To: {target_phone_number}")
+        logger.info(f"📝 Content:\n{message_body}")
 
 @api_router.get("/inquiries", response_model=List[Inquiry])
 async def get_inquiries():
-    inquiries = await db.inquiries.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
-    for inquiry in inquiries:
-        if isinstance(inquiry['created_at'], str):
-            inquiry['created_at'] = datetime.fromisoformat(inquiry['created_at'])
+    # Sort by created_at desc
+    inquiries = sorted(db["inquiries"], key=lambda x: x['created_at'], reverse=True)
     return inquiries
 
 @api_router.patch("/inquiries/{inquiry_id}")
 async def update_inquiry_status(inquiry_id: str, status: str):
-    result = await db.inquiries.update_one({"id": inquiry_id}, {"$set": {"status": status}})
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Inquiry not found")
-    return {"message": "Status updated"}
+    for inquiry in db["inquiries"]:
+        if inquiry['id'] == inquiry_id:
+            inquiry['status'] = status
+            return {"message": "Status updated"}
+    raise HTTPException(status_code=404, detail="Inquiry not found")
 
 @api_router.post("/notices", response_model=Notice)
 async def create_notice(notice: NoticeBase):
     notice_obj = Notice(**notice.model_dump())
-    doc = notice_obj.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.notices.insert_one(doc)
+    db["notices"].append(notice_obj.model_dump())
     return notice_obj
 
 @api_router.get("/notices", response_model=List[Notice])
 async def get_notices(active: Optional[bool] = True):
-    query = {"active": active} if active is not None else {}
-    notices = await db.notices.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
-    for notice in notices:
-        if isinstance(notice['created_at'], str):
-            notice['created_at'] = datetime.fromisoformat(notice['created_at'])
+    notices = db["notices"]
+    if active is not None:
+        notices = [n for n in notices if n.get('active') == active]
+    notices.sort(key=lambda x: x['created_at'], reverse=True)
     return notices
 
 @api_router.delete("/notices/{notice_id}")
 async def delete_notice(notice_id: str):
-    result = await db.notices.delete_one({"id": notice_id})
-    if result.deleted_count == 0:
+    initial_len = len(db["notices"])
+    db["notices"] = [n for n in db["notices"] if n['id'] != notice_id]
+    if len(db["notices"]) == initial_len:
         raise HTTPException(status_code=404, detail="Notice not found")
     return {"message": "Notice deleted"}
 
 @api_router.post("/admin/login", response_model=AdminResponse)
 async def admin_login(credentials: AdminLogin):
-    admin = await db.admins.find_one({"username": credentials.username}, {"_id": 0})
+    # Find admin
+    admin = next((a for a in db["admins"] if a['username'] == credentials.username), None)
     
     if not admin:
+        # Default admin check (create if doesn't exist equivalent in logic)
         if credentials.username == "admin" and credentials.password == "admin123":
+            # Check if default admin already in db to avoid duplicates if called multiple times (though simple list append is fine for now)
+            # Actually, let's just create a new one every time for this simple in-memory logic or check if exists
+            
+            # Encrypt password
             password_hash = bcrypt.hashpw(credentials.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             admin_obj = AdminUser(username=credentials.username, password_hash=password_hash)
-            doc = admin_obj.model_dump()
-            await db.admins.insert_one(doc)
+            db["admins"].append(admin_obj.model_dump())
+            
             token = str(uuid.uuid4())
             return AdminResponse(id=admin_obj.id, username=admin_obj.username, token=token)
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -214,7 +261,3 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
