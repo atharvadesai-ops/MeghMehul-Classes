@@ -161,18 +161,51 @@ def send_whatsapp_notification(inquiry: Inquiry):
     )
 
     if whatsapp_token and whatsapp_phone_number_id:
-        url = f"https://graph.facebook.com/v18.0/{whatsapp_phone_number_id}/messages"
+        url = f"https://graph.facebook.com/v22.0/{whatsapp_phone_number_id}/messages"
         headers = {
             "Authorization": f"Bearer {whatsapp_token}",
             "Content-Type": "application/json"
         }
         data = {
-            "messaging_product": "whatsapp",
-            "to": target_phone_number,
-            "type": "text",
-            "text": {"body": message_body}
-        }
-        
+    "messaging_product": "whatsapp",
+    "to": "918983692788",
+    "type": "template",
+    "template": {
+        "name": "inquiry_alert",
+        "language": {
+            "code": "en_US"
+        },
+        "components": [
+            {
+                "type": "body",
+                "parameters": [
+                    {
+                        "type": "text",
+                        "text": inquiry.name
+                    },
+                    {
+                        "type": "text",
+                        "text": inquiry.phone or 'N/A'
+                    },
+                    {
+                        "type": "text",
+                        "text": inquiry.email or 'N/A'
+                    },
+                    {
+                        "type": "text",
+                        "text": inquiry.course_interested or 'N/A'
+                    },
+                    {
+                        "type": "text",
+                        "text": inquiry.message or 'N/A'
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
             logger.info("✅ WhatsApp notification sent successfully")
